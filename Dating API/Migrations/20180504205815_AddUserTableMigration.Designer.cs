@@ -11,8 +11,8 @@ using System;
 namespace DatingAPI.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    [Migration("20180504152616_TableNameDbSetNameCorrectedMigration")]
-    partial class TableNameDbSetNameCorrectedMigration
+    [Migration("20180504205815_AddUserTableMigration")]
+    partial class AddUserTableMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,22 @@ namespace DatingAPI.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Dating.API.Model.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<byte[]>("PasswordHash");
+
+                    b.Property<byte[]>("PasswordSalt");
+
+                    b.Property<string>("Username");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
 
             modelBuilder.Entity("Dating.API.Model.Value", b =>
                 {

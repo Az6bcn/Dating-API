@@ -1,10 +1,12 @@
-﻿using Dating.API.Data;
+﻿using DatingAPI.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dating_API.Controllers
 {
+    [Authorize] // ==> only authenticated user! (user with valid jwt)
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
