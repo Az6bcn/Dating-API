@@ -35,8 +35,10 @@ namespace DatingAPI.Controllers
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel registerViewModel)
         {
+            
+
             // validate request ==> check if the validation is passed/not (modelState)
-            if (!ModelState.IsValid) return new BadRequestObjectResult(ModelState);
+            if (!ModelState.IsValid) return new BadRequestObjectResult((new Error() { ErrorMessage = "username and password is required"}));
 
 
             var username = registerViewModel.username.ToLower();
@@ -45,13 +47,13 @@ namespace DatingAPI.Controllers
             // check if user already exist 
             var exists = await _authRepository.UserExists(username);
 
-            if (exists) { return new BadRequestObjectResult("username already exists"); }
+            if (exists) { return new BadRequestObjectResult(new Error() { ErrorMessage = "username already exists"}); }
 
             // user to create
             var userToRegister = new User() { Username = username };
             var createdUser = await _authRepository.Register(userToRegister, password);
-
-            return new OkObjectResult(createdUser);
+        
+            return new OkObjectResult(new { CreatedUser =  createdUser.Username });
         }
 
 
@@ -65,7 +67,7 @@ namespace DatingAPI.Controllers
 
             var loginUser = await _authRepository.Login(username, password);
 
-            if (loginUser == null) new UnauthorizedResult();
+            if (loginUser == null) return new UnauthorizedResult();
 
             // build  token
             var tokenString = GenerateToken(loginUser);
