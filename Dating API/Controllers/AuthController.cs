@@ -113,7 +113,5 @@ namespace DatingAPI.Controllers
 
             return tokenDescriptor;
         }
-
-       
     }
 }
