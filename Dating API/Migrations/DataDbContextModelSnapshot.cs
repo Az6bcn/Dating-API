@@ -11,7 +11,7 @@ using System;
 namespace DatingAPI.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DatabContextModelSnapshot : ModelSnapshot
+    partial class DataDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -20,7 +20,7 @@ namespace DatingAPI.Migrations
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Dating.API.Model.User", b =>
+            modelBuilder.Entity("DatingAPI.Model.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -36,7 +36,7 @@ namespace DatingAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Dating.API.Model.Value", b =>
+            modelBuilder.Entity("DatingAPI.Model.Value", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
