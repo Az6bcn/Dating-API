@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingAPI.Data;
+using DatingAPI.DTOs.Profiles;
 using DatingAPI.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -31,20 +33,23 @@ namespace Dating_API
         {
             /* Specify the services we want to consume in our App, these services will be used as DI by controllers, Repositories etc*/
 
-            
+
 
             // Register DbContext bcos it'll be injected into other parts of our App 
             services.AddDbContext<DataDbContext>(
                 // tell and configure the dB provider we want to use e.g: sqllite, sql server etc )
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
 
-            
+
             // Register CORS 
             services.AddCors();
 
             // Register Repository 
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IDatingRepository, DatingRepository>();
 
+            //register the concrete seedData class with transient and use this class in the pipeline to seed data to DB
+            services.AddTransient<SeedData>();
 
 
             var jwtKey = Configuration.GetSection(nameof(JwtKey));
@@ -54,17 +59,16 @@ namespace Dating_API
             // Add Authentication => to authenticate and only allow authenticated users 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
-                              {
-                                  options.TokenValidationParameters = new TokenValidationParameters
-                                                                      {
-                                                                          // parameters to validate in clients token
-                                                                          ValidateIssuerSigningKey = true,
-                                                                          IssuerSigningKey =
-                                                                              new SymmetricSecurityKey(signKey),
-                                                                          ValidateIssuer   = false,
-                                                                          ValidateAudience = false
-                                                                      };
-                              });
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // parameters to validate in clients token
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(signKey),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
 
 
 
@@ -72,11 +76,19 @@ namespace Dating_API
             services.AddOptions();
             services.Configure<JwtKey>(Configuration.GetSection(nameof(JwtKey))); // Loads up "Jwt" from appsetting.json into Jwt POCO.
 
-            services.AddMvc();
+            //AutoMapper
+            var mapperConfig = new MapperConfiguration(config =>
+            {
+                config.AddProfile<UserProfile>();
+            });
+            services.AddAutoMapper();
+
+            services.AddMvc()
+                .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedData seeder)
         {
             /* pipeline for our httpRequest*/
 
@@ -92,13 +104,14 @@ namespace Dating_API
                                                     .AllowAnyHeader());
 
 
-
+            //seed data to DB
+            //seeder.Seed();
 
             // Add Authentication to the pipeline
             app.UseAuthentication();
 
 
-            
+
             app.UseMvc();
         }
     }
