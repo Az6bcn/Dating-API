@@ -11,9 +11,10 @@ using System;
 namespace DatingAPI.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190302143929_ExtendedUserClass")]
+    partial class ExtendedUserClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +32,7 @@ namespace DatingAPI.Migrations
 
                     b.Property<bool>("IsMain");
 
-                    b.Property<string>("Url");
+                    b.Property<int>("Url");
 
                     b.Property<int>("UserId");
 
