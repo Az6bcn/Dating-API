@@ -16,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Dating_API
 {
@@ -76,6 +78,30 @@ namespace Dating_API
             services.AddOptions();
             services.Configure<JwtKey>(Configuration.GetSection(nameof(JwtKey))); // Loads up "Jwt" from appsetting.json into Jwt POCO.
 
+            // Register the Swagger generator, defining 1 or more Swagger documents: generates the swagger json endpoint
+            services.AddSwaggerGen(option =>
+           {
+               option.SwaggerDoc("v1", new Info
+               {
+                   Version = "v1",
+                   Title = "Dating API",
+                   Description = "ASP.NET Core Dating Web API",
+                   TermsOfService = "None",
+                   Contact = new Contact
+                   {
+                       Name = "Azeez Odumosu",
+                       Email = "az6bcn@gmail.com",
+                       Url = "https://twitter.com/az6bcn"
+                   },
+                   License = new License
+                   {
+                       Name = "Use under LICX",
+                       Url = "https://example.com/license"
+                   }
+               });
+           });
+
+
             //AutoMapper
             var mapperConfig = new MapperConfiguration(config =>
             {
@@ -84,7 +110,10 @@ namespace Dating_API
             services.AddAutoMapper();
 
             services.AddMvc()
-                .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+                .AddJsonOptions(opt => {
+                    opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    opt.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -102,6 +131,16 @@ namespace Dating_API
             app.UseCors(optionPolicy => optionPolicy.AllowAnyMethod()
                                                     .AllowAnyOrigin()
                                                     .AllowAnyHeader());
+
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dating API V1");
+            });
 
 
             //seed data to DB
