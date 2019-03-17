@@ -99,13 +99,6 @@ namespace DatingAPI_Test.Controller
 
         }
 
-        [Description("Should return a list of all users, in dto model")]
-        [TestMethod]
-        public void Testo1()
-        {
-            Assert.AreEqual("1", "1");
-        }
-
         [Description("Should return user of the ID, in dto model")]
         [TestMethod]
         public void GetUserById_WhenCalled_ShouldReturnUserWithID()
