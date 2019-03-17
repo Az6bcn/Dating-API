@@ -46,5 +46,10 @@ namespace DatingAPI.Data
             var response = await _dbContext.SaveChangesAsync() > 0;
             return response;
         }
+
+        //public async Task<User> Update(User user)
+        //{
+        //    await _dbContext.Users.FromSql()
+        //}
     }
 }

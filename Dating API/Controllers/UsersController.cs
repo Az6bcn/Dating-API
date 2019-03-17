@@ -33,9 +33,9 @@ namespace DatingAPI.Controllers
         {
             var users = await _datingRepository.GetUsers();
 
-           var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
+            var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
 
-           return Ok(usersDTO);
+            return Ok(usersDTO);
         }
 
 
@@ -45,20 +45,58 @@ namespace DatingAPI.Controllers
         [ProducesResponseType(typeof(UserDetailDTO), 404)]
         public async Task<IActionResult> GetUserByID(int userID)
         {
-            if(userID == 0)
+            if (userID == 0)
             {
                 return new BadRequestObjectResult(new { ErrorMessage = "Cannot be 0" });
             }
 
             var user = await _datingRepository.GetUser(userID);
 
-            if(user == null)
+            if (user == null)
             {
                 return new NotFoundObjectResult(new { ErrorMessage = "No user found" });
             }
 
             var userDetaiedDTO = _mapper.Map<UserDetailDTO>(user);
             return Ok(userDetaiedDTO);
+        }
+
+        [HttpPost("Member/" + "{id: int}"+ "/edit-profile")]
+        [ProducesResponseType(typeof(UserDetailDTO), 201)]
+        [ProducesResponseType(typeof(UserDetailDTO), 400)]
+        [ProducesResponseType(typeof(UserDetailDTO), 404)]
+        public async Task<IActionResult> EditUserProfile([FromBody] UserDetailDTO userDetailDTO, int id)
+        {
+            if (id < 0 || (id != userDetailDTO.Id))
+            {
+                return new BadRequestObjectResult(new Error { ErrorMessage = "Member Id cannot be null" });
+            }
+
+            // check if user exists
+            var userDB = await _datingRepository.GetUser(userDetailDTO.Id);
+
+            if (userDB == null)
+            {
+                return new NotFoundObjectResult(new Error { ErrorMessage = "User not found" });
+            }
+            
+            var userToEdit = _mapper.Map<User>(userDetailDTO);
+
+            //userDB.Interests = userToEdit.Interests;
+            //userDB.Introduction = userToEdit.Introduction;
+            //userDB.KnownAs = userToEdit.KnownAs;
+            //userDB.LookingFor = userToEdit.LookingFor;
+            //userDB.Username = userToEdit.Username;
+            //userDB.City = userToEdit.City;
+            //userDB.Country = userToEdit.Country;
+            //userDB.DateOfBirth = userToEdit.DateOfBirth;
+            //userDB.Gender = userToEdit.Gender;
+
+
+
+
+
+            return Ok();
         }
     }
 }
