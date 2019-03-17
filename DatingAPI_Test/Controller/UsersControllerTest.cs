@@ -120,5 +120,45 @@ namespace DatingAPI_Test.Controller
             Assert.AreEqual(2, count.Id);
 
         }
+
+        [Description("Get user with invalid ID")]
+        [TestMethod]
+        public void GetUserByID_WithInvalidID_ShouldReturnNotFound()
+        {
+            // Arrange
+            // set up concrete method implementation for GetUser(id) in the interface
+            _datingRepositoryMock.Setup(s => s.GetUser(It.IsAny<int>()))
+                .Returns((int id) => Task.FromResult(users.AsEnumerable()
+                    .Where(x => x.Id == id).FirstOrDefault()));
+
+            var controller = new UsersController(_datingRepositoryMock.Object, mapper);
+
+            // Act
+            var usersDto = (NotFoundObjectResult)controller.GetUserByID(10).Result;
+
+            //Assert
+            Assert.IsInstanceOfType(usersDto, typeof(NotFoundObjectResult));
+
+        }
+
+        [Description("Get user with ID == 0")]
+        [TestMethod]
+        public void GetUserWithID_WithIDZero_ShouldReturnBadRequest()
+        {
+            // Arrange
+            // set up concrete method implementation for GetUser(id) in the interface
+            _datingRepositoryMock.Setup(s => s.GetUser(It.IsAny<int>()))
+                .Returns((int id) => Task.FromResult(users.AsEnumerable()
+                    .Where(x => x.Id == id).FirstOrDefault()));
+
+            var controller = new UsersController(_datingRepositoryMock.Object, mapper);
+
+            // Act
+            var usersDto = (BadRequestObjectResult)controller.GetUserByID(0).Result;
+
+            //Assert
+            Assert.IsInstanceOfType(usersDto, typeof(BadRequestObjectResult));
+
+        }
     }
 }
