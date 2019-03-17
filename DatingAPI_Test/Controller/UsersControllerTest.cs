@@ -21,7 +21,6 @@ namespace DatingAPI_Test.Controller
     {
         private Mock<IDatingRepository> _datingRepositoryMock;
         private List<User> users;
-        private MapperConfigurationExpression mappings;
         private IMapper mapper;
 
         public UsersControllerTest()
@@ -56,18 +55,18 @@ namespace DatingAPI_Test.Controller
                     Username = "Joey"
                 },
                 new User {
-                    Id = 1,
-                    City = "Barcelona",
-                    Country = "Spain",
+                    Id = 2,
+                    City = "London",
+                    Country = "Uk",
                     CreatedAt = DateTime.Now,
                     DateOfBirth = DateTime.Now,
                     Gender = "Male",
-                    KnownAs = "AZAZXXS",
+                    KnownAs = "ssdss",
                     LastActive = DateTime.Now,
-                    Username = "Joey"
+                    Username = "azeez"
                 },
                 new User {
-                    Id = 1,
+                    Id = 3,
                     City = "Barcelona",
                     Country = "Spain",
                     CreatedAt = DateTime.Now,
@@ -107,5 +106,26 @@ namespace DatingAPI_Test.Controller
             Assert.AreEqual("1", "1");
         }
 
+        [Description("Should return user of the ID, in dto model")]
+        [TestMethod]
+        public void GetUserById_WhenCalled_ShouldReturnUserWithID()
+        {
+            // Arrange
+            // set up concrete method implementation for GetUser(id) in the interface
+            _datingRepositoryMock.Setup(s => s.GetUser(It.IsAny<int>()))
+                .Returns((int id) => Task.FromResult(users.AsEnumerable()
+                    .Where(x => x.Id == id ).First()));
+
+            var controller = new UsersController(_datingRepositoryMock.Object, mapper);
+
+            // Act
+            var usersDto = (OkObjectResult)controller.GetUserByID(2).Result;
+            var count = usersDto.Value as UserDetailDTO;
+
+            //Assert
+            Assert.IsInstanceOfType(usersDto.Value, typeof(UserDetailDTO));
+            Assert.AreEqual(2, count.Id);
+
+        }
     }
 }
