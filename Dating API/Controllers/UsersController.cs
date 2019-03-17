@@ -17,20 +17,18 @@ namespace DatingAPI.Controllers
     [Route("api/Users")]
     public class UsersController : Controller
     {
-        private readonly DataDbContext _dataDbContext;
         private readonly IDatingRepository _datingRepository;
         private readonly IMapper _mapper;
 
-        public UsersController(DataDbContext dataDbContext, IDatingRepository datingRepository, IMapper mapper)
+        public UsersController(IDatingRepository datingRepository, IMapper mapper)
         {
-            _dataDbContext = dataDbContext;
             _datingRepository = datingRepository;
             _mapper = mapper;
         }
 
         [HttpGet("GetUsers")]
-        [ProducesResponseType(typeof(IEnumerable<User>), 200)]
-        [ProducesResponseType(typeof(IEnumerable<User>), 400)]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 400)]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _datingRepository.GetUsers();
@@ -42,9 +40,9 @@ namespace DatingAPI.Controllers
 
 
         [HttpGet("GetUserByID" + "/{userID:int}")]
-        [ProducesResponseType(typeof(User), 200)]
-        [ProducesResponseType(typeof(User), 400)]
-        [ProducesResponseType(typeof(User), 404)]
+        [ProducesResponseType(typeof(UserDetailDTO), 200)]
+        [ProducesResponseType(typeof(UserDetailDTO), 400)]
+        [ProducesResponseType(typeof(UserDetailDTO), 404)]
         public async Task<IActionResult> GetUserByID(int userID)
         {
             if(userID == 0)
