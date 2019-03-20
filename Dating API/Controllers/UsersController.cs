@@ -83,7 +83,6 @@ namespace DatingAPI.Controllers
 
             var userToEditDTO = _mapper.Map<UserDetailDTO>(editedUser);
 
-
             return Ok(userToEditDTO);
         }
     }
