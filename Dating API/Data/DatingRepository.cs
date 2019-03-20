@@ -47,9 +47,18 @@ namespace DatingAPI.Data
             return response;
         }
 
-        //public async Task<User> Update(User user)
-        //{
-        //    await _dbContext.Users.FromSql()
-        //}
-    }
-}
+        public async Task<User> Update(User user)
+        {
+            var response = await _dbContext.Users
+                                           .FromSql("EXEC [dbo].[UPDATE_USER_PROFILE] {0}, {1}, {2 },  {3}, {4},  {5}, {6}, {7}",
+                                           user.Id, user.Username, user.City, user.Country, user.Interests, user.Introduction, user.KnownAs, user.LookingFor)
+                                           .FirstOrDefaultAsync();
+
+            return response;
+        }                                                                                  
+    }                                                                                          
+}                                                                                         
+                                                                                           
+                                                                                          
+                                                                                           
+                                                                                           

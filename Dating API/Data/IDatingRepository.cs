@@ -13,5 +13,6 @@ namespace DatingAPI.Data
         Task<bool> SaveAll();
         Task<IEnumerable<User>> GetUsers();
         Task<User> GetUser(int userID);
+        Task<User> Update(User user);
     }
 }
