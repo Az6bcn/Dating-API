@@ -61,7 +61,7 @@ namespace DatingAPI.Controllers
             return Ok(userDetaiedDTO);
         }
 
-        [HttpPost("Member/" + "{id: int}"+ "/edit-profile")]
+        [HttpPut("{id:int}"+ "/edit-profile")]
         [ProducesResponseType(typeof(UserDetailDTO), 201)]
         [ProducesResponseType(typeof(UserDetailDTO), 400)]
         [ProducesResponseType(typeof(UserDetailDTO), 404)]
@@ -71,32 +71,20 @@ namespace DatingAPI.Controllers
             {
                 return new BadRequestObjectResult(new Error { ErrorMessage = "Member Id cannot be null" });
             }
-
-            // check if user exists
-            var userDB = await _datingRepository.GetUser(userDetailDTO.Id);
-
-            if (userDB == null)
-            {
-                return new NotFoundObjectResult(new Error { ErrorMessage = "User not found" });
-            }
             
             var userToEdit = _mapper.Map<User>(userDetailDTO);
 
-            //userDB.Interests = userToEdit.Interests;
-            //userDB.Introduction = userToEdit.Introduction;
-            //userDB.KnownAs = userToEdit.KnownAs;
-            //userDB.LookingFor = userToEdit.LookingFor;
-            //userDB.Username = userToEdit.Username;
-            //userDB.City = userToEdit.City;
-            //userDB.Country = userToEdit.Country;
-            //userDB.DateOfBirth = userToEdit.DateOfBirth;
-            //userDB.Gender = userToEdit.Gender;
+            var editedUser = await _datingRepository.Update(userToEdit);
+
+            if (editedUser == null)
+            {
+                return new BadRequestObjectResult(new Error { ErrorMessage = "User doesn't exist"} );
+            }
+
+            var userToEditDTO = _mapper.Map<UserDetailDTO>(editedUser);
 
 
-
-
-
-            return Ok();
+            return Ok(userToEditDTO);
         }
     }
 }
