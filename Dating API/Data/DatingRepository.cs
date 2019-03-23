@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DatingAPI.DTOs;
 using DatingAPI.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,8 +55,22 @@ namespace DatingAPI.Data
                                            user.Id, user.Username, user.City, user.Country, user.Interests, user.Introduction, user.KnownAs, user.LookingFor)
                                            .FirstOrDefaultAsync();
 
+            var photos = await GetUserPhotosByUserID(user.Id);
+
+            response.Photos = photos as List<Photo>;
+
             return response;
-        }                                                                                  
+        }
+
+        public async Task<IEnumerable<Photo>> GetUserPhotosByUserID(int UserID)
+        {
+            var response = await _dbContext.Photos
+                                           .FromSql("EXEC [dbo].[GetUserPhotoByUserID] {0}", UserID)
+                                           .ToListAsync();
+
+            return response;
+        }
+
     }                                                                                          
 }                                                                                         
                                                                                            
