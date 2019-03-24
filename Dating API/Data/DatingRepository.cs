@@ -51,8 +51,8 @@ namespace DatingAPI.Data
         public async Task<User> Update(User user)
         {
             var response = await _dbContext.Users
-                                           .FromSql("EXEC [dbo].[UPDATE_USER_PROFILE] {0}, {1}, {2 },  {3}, {4},  {5}, {6}, {7}",
-                                           user.Id, user.Username, user.City, user.Country, user.Interests, user.Introduction, user.KnownAs, user.LookingFor)
+                                           .FromSql("EXEC [dbo].[UPDATE_USER_PROFILE] {0}, {1}, {2 },  {3}, {4},  {5}",
+                                           user.Id, user.City, user.Country, user.Interests, user.Introduction, user.LookingFor)
                                            .FirstOrDefaultAsync();
 
             var photos = await GetUserPhotosByUserID(user.Id);
