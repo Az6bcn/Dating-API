@@ -77,6 +77,7 @@ namespace Dating_API
             // Register IOptions
             services.AddOptions();
             services.Configure<JwtKey>(Configuration.GetSection(nameof(JwtKey))); // Loads up "Jwt" from appsetting.json into Jwt POCO.
+            services.Configure<CloudinarySettings>(Configuration.GetSection(nameof(CloudinarySettings)));     // Add our Config object so it can be injected
 
             // Register the Swagger generator, defining 1 or more Swagger documents: generates the swagger json endpoint
             services.AddSwaggerGen(option =>
