@@ -21,6 +21,7 @@ namespace DatingAPI_Test.Controller
     {
         private Mock<IDatingRepository> _datingRepositoryMock;
         private List<User> users;
+        private UserDetailDTO userdetail;
         private IMapper mapper;
 
         public UsersControllerTest()
@@ -77,6 +78,7 @@ namespace DatingAPI_Test.Controller
                     Username = "Joey"
                 }
             };
+           
         }
 
         [Description("Should return a list of all users, in dto model")]
@@ -160,5 +162,128 @@ namespace DatingAPI_Test.Controller
             Assert.IsInstanceOfType(usersDto, typeof(BadRequestObjectResult));
 
         }
+
+
+        [Description("Edit user profile with ID == 0")]
+        [TestMethod]
+        public void EditUserProfile_WithID_WithIDZero_ShouldReturnErrorMessage()
+        {
+            // Arrange
+            // set up concrete method implementation for GetUser(id) in the interface
+            //_datingRepositoryMock.Setup(s => s.GetUserPhotosByUserID(It.IsAny<int>()))
+            //    .Returns((int id) => Task.FromResult(users.AsEnumerable()
+            //        .Where(x => x.Id == id).FirstOrDefault()));
+            var userDTO = new UserDetailDTO();
+
+            var controller = new UsersController(_datingRepositoryMock.Object, mapper);
+
+            // Act
+            var usersDto = (dynamic)controller.EditUserProfile(userDTO, 0).Result;
+
+            //Assert
+            Assert.IsInstanceOfType(usersDto, typeof(BadRequestObjectResult));
+            Assert.AreEqual("Member Id cannot be null", usersDto.Value.ErrorMessage);
+
+        }
+
+        [Description("Edit user profile")]
+        [TestMethod]
+        public void EditUserProfile_WhenCalled_VerifyEditMethodCallWIthPassedUserDetailDTO_And_ReturnTypeIsOkObjectResult()
+        {
+            // Arrange
+            var userdetailToEdit = new UserDetailDTO
+            {
+
+                Id = 1,
+                City = "Barcelona",
+                Country = "Spain",
+                CreatedAt = DateTime.Now,
+                Gender = "Male",
+                KnownAs = "AZAZXXS",
+                LastActive = DateTime.Now,
+                Username = "Joey",
+                Interests = "TESTING",
+                LookingFor = "kn;koxnonxksnxksxs"
+            };
+            var userdetailToEdit_MappedToUser = new User
+            {
+                Id = 1,
+                City = "Barcelona",
+                Country = "Spain",
+                CreatedAt = DateTime.Now,
+                DateOfBirth = DateTime.Now,
+                Gender = "Male",
+                KnownAs = "AZAZXXS",
+                LastActive = DateTime.Now,
+                Username = "Joey"
+            };
+            // set up concrete method implementation for GetUser(id) in the interface
+            _datingRepositoryMock.Setup(s => s.Update(It.IsAny<User>()))
+                .Returns((User _userdetail) => Task.FromResult(userdetailToEdit_MappedToUser));
+
+            var controller = new UsersController(_datingRepositoryMock.Object, mapper);
+
+            // Act
+            var usersDto = (OkObjectResult)controller.EditUserProfile(userdetailToEdit, 1).Result;
+
+            //Assert: 
+            // Verify the update() was called with the passed parameter and only called once
+            //_datingRepositoryMock.Verify(s => s.Update(userdetailToEdit_MappedToUser), Times.Once);
+
+            Assert.IsInstanceOfType(usersDto, typeof(OkObjectResult));
+
+
+        }
+
+        [Ignore]
+        [Description("Edit user profile")]
+        [TestMethod]
+        public void EditUserProfile_WhenCalled_VerifyEditMethodCallWIthPassedUserDetailDTO()
+        {
+            // Arrange
+            var userdetailToEdit = new UserDetailDTO
+            {
+
+                Id = 1,
+                City = "Barcelona",
+                Country = "Spain",
+                CreatedAt = DateTime.Now,
+                Gender = "Male",
+                KnownAs = "AZAZXXS",
+                LastActive = DateTime.Now,
+                Username = "Joey",
+                Interests = "TESTING",
+                LookingFor = "kn;koxnonxksnxksxs"
+            };
+            var userdetailToEdit_MappedToUser = new User
+            {
+                Id = 1,
+                City = "Barcelona",
+                Country = "Spain",
+                CreatedAt = DateTime.Now,
+                DateOfBirth = DateTime.Now,
+                Gender = "Male",
+                KnownAs = "AZAZXXS",
+                LastActive = DateTime.Now,
+                Username = "Joey"
+            };
+            // set up concrete method implementation for GetUser(id) in the interface
+            _datingRepositoryMock.Setup(s => s.Update(It.IsAny<User>()))
+                .ReturnsAsync(userdetailToEdit_MappedToUser);
+
+
+            var controller = new UsersController(_datingRepositoryMock.Object, mapper);
+
+            // Act
+            var xxx = controller.EditUserProfile(userdetailToEdit, 1).Result;
+
+            //Assert: 
+            // Verify the update() was called with the passed parameter and only called once
+            _datingRepositoryMock.Verify(s => s.Update(userdetailToEdit_MappedToUser));
+
+        }
+
+
+
     }
 }

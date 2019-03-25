@@ -67,23 +67,26 @@ namespace DatingAPI.Controllers
         [ProducesResponseType(typeof(UserDetailDTO), 404)]
         public async Task<IActionResult> EditUserProfile([FromBody] UserDetailDTO userDetailDTO, int id)
         {
-            if (id < 0 || (id != userDetailDTO.Id))
+            if (id <= 0 || (id != userDetailDTO.Id))
             {
                 return new BadRequestObjectResult(new Error { ErrorMessage = "Member Id cannot be null" });
             }
-            
+
             var userToEdit = _mapper.Map<User>(userDetailDTO);
 
             var editedUser = await _datingRepository.Update(userToEdit);
 
             if (editedUser == null)
             {
-                return new BadRequestObjectResult(new Error { ErrorMessage = "User doesn't exist"} );
+                return new BadRequestObjectResult(new Error { ErrorMessage = "User doesn't exist" });
             }
 
             var userToEditDTO = _mapper.Map<UserDetailDTO>(editedUser);
 
             return Ok(userToEditDTO);
         }
+
+
+       
     }
 }
