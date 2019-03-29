@@ -1,6 +1,7 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using DatingAPI.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -19,22 +20,41 @@ namespace DatingAPI.Helpers
             _cloudinarySettings = cloudinarySettings.Value;
         }
 
-        public UploadResult UploadPhotoToCloudinary(string photoName, Stream photoStream)
+        /// <summary>
+        /// Upload image File to Cloudinary
+        /// </summary>
+        /// <param name="photoName"></param>
+        /// <param name="photoStream"></param>
+        /// <returns></returns>
+        public async Task<UploadResult> UploadPhotoToCloudinaryAsync(string photoName, IFormFile photoStream)
         {
             Account cloudinarAaccount = new Account(_cloudinarySettings.CloudName, _cloudinarySettings.ApiKey,
                 _cloudinarySettings.ApiSecret );
 
             Cloudinary cloudinary = new Cloudinary(cloudinarAaccount);
 
+            var stream = await FileToUploadStreamAsync(photoStream);
 
             var uploadParams = new ImageUploadParams()
             {
-                File = new FileDescription(photoName, photoStream)
+                File = new FileDescription(photoName, stream)
             };
 
             var uploadResult = cloudinary.Upload(uploadParams);
 
             return uploadResult;
+        }
+
+        private async Task<Stream> FileToUploadStreamAsync(IFormFile formFile)
+        {
+            Stream stream;
+            using (var memoryStream = new MemoryStream())
+            {
+                await formFile.CopyToAsync(memoryStream);
+                stream = memoryStream;
+            }
+
+            return stream;
         }
     }
 }

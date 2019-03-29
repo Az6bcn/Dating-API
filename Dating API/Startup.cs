@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DatingAPI.Data;
 using DatingAPI.DTOs.Profiles;
+using DatingAPI.Helpers;
 using DatingAPI.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -52,6 +53,9 @@ namespace Dating_API
 
             //register the concrete seedData class with transient and use this class in the pipeline to seed data to DB
             services.AddTransient<SeedData>();
+
+            //register helper class
+            services.AddTransient<ICloudinaryHelper, ICloudinaryHelper>();
 
 
             var jwtKey = Configuration.GetSection(nameof(JwtKey));
