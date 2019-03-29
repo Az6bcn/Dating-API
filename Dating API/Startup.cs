@@ -55,7 +55,7 @@ namespace Dating_API
             services.AddTransient<SeedData>();
 
             //register helper class
-            services.AddTransient<ICloudinaryHelper, ICloudinaryHelper>();
+            services.AddScoped<ICloudinaryHelper, CloudinaryHelper>();
 
 
             var jwtKey = Configuration.GetSection(nameof(JwtKey));

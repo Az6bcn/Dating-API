@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DatingAPI.Helpers
 {
-    public class CloudinaryHelper
+    public class CloudinaryHelper: ICloudinaryHelper
     {
         private CloudinarySettings _cloudinarySettings;
      
@@ -26,7 +26,7 @@ namespace DatingAPI.Helpers
         /// <param name="photoName"></param>
         /// <param name="photoStream"></param>
         /// <returns></returns>
-        public async Task<UploadResult> UploadPhotoToCloudinaryAsync(string photoName, IFormFile photoStream)
+        public async Task<UploadResult> UploadPhotoToCloudinary(string photoName, IFormFile photoStream)
         {
             Account cloudinarAaccount = new Account(_cloudinarySettings.CloudName, _cloudinarySettings.ApiKey,
                 _cloudinarySettings.ApiSecret );
@@ -67,6 +67,7 @@ namespace DatingAPI.Helpers
                 Url = cloudinaryUrl,
                 UserId = userID
             };
+            return photo;
         }
     }
 }

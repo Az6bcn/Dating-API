@@ -57,8 +57,8 @@ namespace DatingAPI.Controllers
             var cloudinaryResponse = await _cloudinaryHelper.UploadPhotoToCloudinary(photoForCreationDTO.File.FileName, photoForCreationDTO.File);
 
             // save response properties to photos table in DB
-            var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri, photoForCreationDTO.Description, photoForCreationDTO.DateAdded);
-            await _datingRepository.SavePhoto(photo);
+            //var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri, photoForCreationDTO.Description, photoForCreationDTO.DateAdded);
+            //await _datingRepository.SavePhoto(photo);
             
             //return photo
             return new OkObjectResult(new PhotoDTO());

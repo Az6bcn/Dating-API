@@ -11,7 +11,7 @@ namespace DatingAPI.Model
         public string Url { get; set; }
         public string Description { get; set; }
         public bool IsMain { get; set; }
-        public int CloudinaryID { get; set; }
+        public string CloudinaryID { get; set; }
         public DateTime DateAdded { get; set; }
         // Navigation Property
         public User User { get; set; }
