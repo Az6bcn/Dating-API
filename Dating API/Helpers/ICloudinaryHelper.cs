@@ -12,6 +12,6 @@ namespace DatingAPI.Helpers
     public interface ICloudinaryHelper
     {
         Task<UploadResult> UploadPhotoToCloudinary(string photoName, IFormFile photoStream);
-        Photo ParsePhoto(string cloudinaryID, string cloudinaryUrl, int userID, string description, DateTime dateAdded);
+        Photo ParsePhoto(string cloudinaryID, string cloudinaryUrl, int userID, string description, DateTime dateAdded, bool isMain);
     }
 }

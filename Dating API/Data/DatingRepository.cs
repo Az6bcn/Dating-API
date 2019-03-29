@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using DatingAPI.DTOs;
@@ -74,14 +76,45 @@ namespace DatingAPI.Data
         public async Task<Photo> SavePhoto(Photo photo)
         {
             var response = await _dbContext.Photos
-                                           .FromSql("EXEC [dbo].[SavePhoto] {0}", photo.UserId)
+                                           .FromSql("EXEC [dbo].[SavePhoto] {0}, {1}, {2}, {3}, {4}, {5}",
+                                           photo.Url, photo.Description, photo.CloudinaryID, photo.DateAdded, photo.UserId, photo.IsMain)
                                            .FirstOrDefaultAsync();
 
             return response;
         }
 
-    }                                                                                          
-}                                                                                         
+        public async Task<bool> IsThereMainPhotoForUser(int userID)
+        {
+            bool response;
+            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "[dbo].[IsThereMainPhotoForUser]"; // stored procedure name
+                command.CommandType = CommandType.StoredProcedure;
+                // stored procedure parameter
+                command.Parameters.Add(new SqlParameter("@UserID", userID));
+
+
+                _dbContext.Database.OpenConnection();
+
+                using (var result = await command.ExecuteReaderAsync())
+                {
+                    if (result.HasRows)
+                    {
+                        // read the result
+                        while (result.Read())
+                        {
+                            // get the returned column value
+                            response = (bool)result["Response"];
+                            return response;
+                        }
+                    }
+                }
+                return false;
+            }
+
+        }
+    }
+}                                                                                        
                                                                                            
                                                                                           
                                                                                            

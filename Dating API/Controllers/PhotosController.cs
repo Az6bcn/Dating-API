@@ -56,11 +56,18 @@ namespace DatingAPI.Controllers
             //call cloudinary to save file
             var cloudinaryResponse = await _cloudinaryHelper.UploadPhotoToCloudinary(photoForCreationDTO.File.FileName, photoForCreationDTO.File);
 
+            //isFirstPhoto
+            var isFirstPhoto = await _datingRepository.IsThereMainPhotoForUser(photoForCreationDTO.UserID);
+            var isMain = (isFirstPhoto) ? true : false;
+
+
             // save response properties to photos table in DB
-            //var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri, photoForCreationDTO.Description, photoForCreationDTO.DateAdded);
-            //await _datingRepository.SavePhoto(photo);
+            var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri.ToString(), photoForCreationDTO.UserID, 
+                        photoForCreationDTO.Description, photoForCreationDTO.DateAdded, isMain);
+            await _datingRepository.SavePhoto(photo);
             
             //return photo
+
             return new OkObjectResult(new PhotoDTO());
         }
 

@@ -57,7 +57,7 @@ namespace DatingAPI.Helpers
             return stream;
         }
 
-        public Photo ParsePhoto(string cloudinaryID, string cloudinaryUrl, int userID, string description, DateTime dateAdded)
+        public Photo ParsePhoto(string cloudinaryID, string cloudinaryUrl, int userID, string description, DateTime dateAdded, bool isMain)
         {
             var photo = new Photo
             {
@@ -65,7 +65,8 @@ namespace DatingAPI.Helpers
                 DateAdded = dateAdded,
                 Description = description,
                 Url = cloudinaryUrl,
-                UserId = userID
+                UserId = userID,
+                IsMain = isMain
             };
             return photo;
         }
