@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using DatingAPI.DTOs;
 using DatingAPI.Model;
 using DatingAPI.Helpers;
+using DatingAPI.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,10 +19,12 @@ namespace DatingAPI.Controllers
     public class PhotosController : Controller
     {
         private ICloudinaryHelper _cloudinaryHelper;
+        private IDatingRepository _datingRepository;
 
-        public PhotosController(ICloudinaryHelper cloudinaryHelper)
+        public PhotosController(ICloudinaryHelper cloudinaryHelper, IDatingRepository datingRepository)
         {
             _cloudinaryHelper = cloudinaryHelper;
+            _datingRepository = datingRepository;
         }
 
 
@@ -51,7 +54,13 @@ namespace DatingAPI.Controllers
             if(photoForCreationDTO.File.Length <= 0) return new BadRequestObjectResult(new Error { ErrorMessage = "invalid file" });
 
             //call cloudinary to save file
-            _cloudinaryHelper.UploadPhotoToCloudinary(photoForCreationDTO.File.FileName, photoForCreationDTO.File);
+            var cloudinaryResponse = await _cloudinaryHelper.UploadPhotoToCloudinary(photoForCreationDTO.File.FileName, photoForCreationDTO.File);
+
+            // save response properties to photos table in DB
+            var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri, photoForCreationDTO.Description, photoForCreationDTO.DateAdded);
+            await _datingRepository.SavePhoto(photo);
+            
+            //return photo
             return new OkObjectResult(new PhotoDTO());
         }
 

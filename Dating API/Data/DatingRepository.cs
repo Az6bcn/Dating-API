@@ -71,6 +71,15 @@ namespace DatingAPI.Data
             return response;
         }
 
+        public async Task<Photo> SavePhoto(Photo photo)
+        {
+            var response = await _dbContext.Photos
+                                           .FromSql("EXEC [dbo].[SavePhoto] {0}", UserID)
+                                           .ToListAsync();
+
+            return response;
+        }
+
     }                                                                                          
 }                                                                                         
                                                                                            

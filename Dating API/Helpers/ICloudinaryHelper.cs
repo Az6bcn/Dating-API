@@ -1,4 +1,5 @@
 ﻿using CloudinaryDotNet.Actions;
+using DatingAPI.Model;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace DatingAPI.Helpers
 {
     public interface ICloudinaryHelper
     {
-        UploadResult UploadPhotoToCloudinary(string photoName, IFormFile photoStream);
+        Task<UploadResult> UploadPhotoToCloudinary(string photoName, IFormFile photoStream);
+        Photo ParsePhoto(string cloudinaryID, string cloudinaryUrl, int userID, string description, DateTime dateAdded);
     }
 }
