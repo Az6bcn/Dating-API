@@ -26,6 +26,8 @@ namespace DatingAPI.DTOs.Profiles
             //CreateMap<IEnumerable<User>, IEnumerab le<UserDTO>>();
             CreateMap<Photo, PhotoDTO>();
             CreateMap<PhotoDTO, Photo>();
+
+            CreateMap<Photo, PhotoForReturnDTO>();
         }
     }
 }

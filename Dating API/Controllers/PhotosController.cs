@@ -9,22 +9,25 @@ using DatingAPI.DTOs;
 using DatingAPI.Model;
 using DatingAPI.Helpers;
 using DatingAPI.Data;
+using AutoMapper;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace DatingAPI.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("api/users/{userID:int}/[controller]")]
     public class PhotosController : Controller
     {
         private ICloudinaryHelper _cloudinaryHelper;
         private IDatingRepository _datingRepository;
+        private readonly IMapper _mapper;
 
-        public PhotosController(ICloudinaryHelper cloudinaryHelper, IDatingRepository datingRepository)
+        public PhotosController(ICloudinaryHelper cloudinaryHelper, IDatingRepository datingRepository, IMapper mapper)
         {
             _cloudinaryHelper = cloudinaryHelper;
             _datingRepository = datingRepository;
+            _mapper = mapper;
         }
 
 
@@ -42,11 +45,11 @@ namespace DatingAPI.Controllers
             return "value";
         }
 
-        // POST api/photos
+        // POST api/users/id/photos
         [HttpPost]
         [ProducesResponseType(typeof(PhotoDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddPhotoForUser([FromBody] PhotoForCreationDTO photoForCreationDTO)
+        public async Task<IActionResult> AddPhotoForUser([FromForm] PhotoForCreationDTO photoForCreationDTO, int userID)
         {
             if (photoForCreationDTO.UserID < 0) return new BadRequestObjectResult(new Error { ErrorMessage = "invalid UserID" });
 
@@ -62,13 +65,13 @@ namespace DatingAPI.Controllers
 
 
             // save response properties to photos table in DB
-            var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri.ToString(), photoForCreationDTO.UserID, 
+            var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri.ToString(), userID, 
                         photoForCreationDTO.Description, photoForCreationDTO.DateAdded, isMain);
-            await _datingRepository.SavePhoto(photo);
-            
-            //return photo
+            var savedPhoto = await _datingRepository.SavePhoto(photo);
 
-            return new OkObjectResult(new PhotoDTO());
+            //return photo
+            var savedPhotoDTO = _mapper.Map<PhotoForReturnDTO>(savedPhoto);
+            return new OkObjectResult(savedPhotoDTO);
         }
 
         // PUT api/<controller>/5

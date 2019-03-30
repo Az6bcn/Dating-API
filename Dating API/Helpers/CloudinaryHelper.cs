@@ -26,32 +26,35 @@ namespace DatingAPI.Helpers
         /// <param name="photoName"></param>
         /// <param name="photoStream"></param>
         /// <returns></returns>
-        public async Task<UploadResult> UploadPhotoToCloudinary(string photoName, IFormFile photoStream)
+        public async Task<UploadResult> UploadPhotoToCloudinary(string photoName, IFormFile formFile)
         {
             Account cloudinarAaccount = new Account(_cloudinarySettings.CloudName, _cloudinarySettings.ApiKey,
                 _cloudinarySettings.ApiSecret );
 
             Cloudinary cloudinary = new Cloudinary(cloudinarAaccount);
 
-            var stream = await FileToUploadStreamAsync(photoStream);
-
-            var uploadParams = new ImageUploadParams()
+            ImageUploadResult uploadResult;
+            using (var fileStream = formFile.OpenReadStream())
             {
-                File = new FileDescription(photoName, stream)
-            };
+                var uploadParams = new ImageUploadParams()
+                {
+                    File = new FileDescription(photoName, fileStream)
+                };
 
-            var uploadResult = cloudinary.Upload(uploadParams);
+                 uploadResult = cloudinary.Upload(uploadParams);
+            }
+
+            
 
             return uploadResult;
         }
 
-        private async Task<Stream> FileToUploadStreamAsync(IFormFile formFile)
+        private Stream FileToUploadStreamAsync(IFormFile formFile)
         {
             Stream stream;
-            using (var memoryStream = new MemoryStream())
+            using (var fileStream = formFile.OpenReadStream())
             {
-                await formFile.CopyToAsync(memoryStream);
-                stream = memoryStream;
+                stream = fileStream;
             }
 
             return stream;
