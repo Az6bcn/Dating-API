@@ -57,7 +57,13 @@ namespace DatingAPI.Controllers
                 return new NotFoundObjectResult(new { ErrorMessage = "No user found" });
             }
 
-            var userDetaiedDTO = _mapper.Map<UserDetailDTO>(user);
+            var validPhotos = user.Photos.Where(p => p.Deleted == null).ToList();
+
+            var userWithValidPhotos = user;
+
+            userWithValidPhotos.Photos = user.Photos.Where(p => validPhotos.Contains(p)).ToList();
+
+            var userDetaiedDTO = _mapper.Map<UserDetailDTO>(userWithValidPhotos);
             return Ok(userDetaiedDTO);
         }
 
