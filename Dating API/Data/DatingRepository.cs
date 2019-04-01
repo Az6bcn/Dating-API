@@ -113,6 +113,69 @@ namespace DatingAPI.Data
             }
 
         }
+
+        public async Task<bool> PhotoExists(int photoID)
+        {
+            bool response;
+            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "[dbo].[PhotoExist]"; // stored procedure name
+                command.CommandType = CommandType.StoredProcedure;
+                // stored procedure parameter
+                command.Parameters.Add(new SqlParameter("@PhotoID", photoID));
+
+
+                _dbContext.Database.OpenConnection();
+
+                using (var result = await command.ExecuteReaderAsync())
+                {
+                    if (result.HasRows)
+                    {
+                        // read the result
+                        while (result.Read())
+                        {
+                            // get the returned column value
+                            response = (bool)result["PhotoExist"];
+                            return response;
+                        }
+                    }
+                }
+                return false;
+            }
+
+        }
+
+        public async Task<bool> DeletePhoto(int photoID)
+        {
+            bool response;
+            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "[dbo].[DeletePhoto]"; // stored procedure name
+                command.CommandType = CommandType.StoredProcedure;
+                // stored procedure parameter
+                command.Parameters.Add(new SqlParameter("@PhotoID", photoID));
+
+
+                _dbContext.Database.OpenConnection();
+
+                using (var result = await command.ExecuteReaderAsync())
+                {
+                    if (result.HasRows)
+                    {
+                        // read the result
+                        while (result.Read())
+                        {
+                            // get the returned column value
+                            response = (bool)result["Deleted"];
+                            return response;
+                        }
+                    }
+                }
+                return false;
+            }
+
+        }
+
     }
 }                                                                                        
                                                                                            

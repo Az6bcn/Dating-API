@@ -16,5 +16,7 @@ namespace DatingAPI.Data
         Task<User> Update(User user);
         Task<Photo> SavePhoto(Photo photo);
         Task<bool> IsThereMainPhotoForUser(int userID);
+        Task<bool> PhotoExists(int photoID);
+        Task<bool> DeletePhoto(int photoID);
     }
 }

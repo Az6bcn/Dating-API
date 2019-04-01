@@ -13,6 +13,7 @@ namespace DatingAPI.Model
         public bool IsMain { get; set; }
         public string CloudinaryID { get; set; }
         public DateTime DateAdded { get; set; }
+        public DateTime? Deleted { get; set; } = null;
         // Navigation Property
         public User User { get; set; }
         //FK

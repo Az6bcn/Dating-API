@@ -81,9 +81,23 @@ namespace DatingAPI.Controllers
         }
 
         // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{photoID:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete(int photoID, int userID)
         {
+            if(photoID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete photo with id 0" });  }
+
+            // check if photo exist for user
+            var photoExists = await _datingRepository.PhotoExists(photoID);
+            if (!photoExists) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete, photo does not exist" }); }
+
+            //delete
+            var deleted = await _datingRepository.DeletePhoto(photoID);
+
+            if(!deleted) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete photo" }); }
+
+            return new NoContentResult();
         }
     }
 }
