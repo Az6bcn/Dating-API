@@ -21,12 +21,14 @@ namespace DatingAPI.Controllers
     {
         private readonly IAuthRepository _authRepository;
         private readonly JwtKey _options;
+        private readonly IDatingRepository _datingRepository;
 
         // DI: inject AuthRepository
-        public AuthController(IAuthRepository authRepository, IOptions<JwtKey> options)
+        public AuthController(IAuthRepository authRepository, IOptions<JwtKey> options, IDatingRepository datingRepository)
         {
             _authRepository = authRepository;
             _options = options.Value;
+            _datingRepository = datingRepository;
         }
 
 
@@ -70,23 +72,23 @@ namespace DatingAPI.Controllers
             if (loginUser == null) return new UnauthorizedResult();
 
             // build  token
-            var tokenString = GenerateToken(loginUser);
+            var tokenString = await GenerateToken(loginUser);
 
             return Ok(new { tokenString });
         }
 
 
-        private string GenerateToken(User user)
+        private async Task<string> GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = _options.SignKey;
             var signKey = Encoding.ASCII.GetBytes(_options.SignKey); // encode key as Byte[]
 
             // get token payload:
-            var tokenPayload = GenerateTokenPayload(user, signKey);
+            var tokenPayload = await GenerateTokenPayload(user, signKey);
 
             // create token:
-            var token = tokenHandler.CreateToken(tokenPayload);
+            var token =  tokenHandler.CreateToken(tokenPayload);
 
             // write token out
             var tokenString = tokenHandler.WriteToken(token);
@@ -94,15 +96,20 @@ namespace DatingAPI.Controllers
             return tokenString;
         }
 
-        private SecurityTokenDescriptor GenerateTokenPayload(User user, Byte[] signKey)
+        private async Task<SecurityTokenDescriptor> GenerateTokenPayload(User user, Byte[] signKey)
         {
+            // get user's main photoURL
+            var currentuser = await _datingRepository.GetUser(user.Id);
+
+            var userMainPhotoURL = currentuser.Photos.Where(x => x.IsMain).FirstOrDefault().Url;
             // generate token payload (body)
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(new Claim[]
                                                  {
                                                    new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
-                                                   new Claim(ClaimTypes.Name, user.Username)
+                                                   new Claim(ClaimTypes.Name, user.Username),
+                                                   new Claim("MainPhotoURL", userMainPhotoURL)
                                                      // we can add issuer and audience 
                                                  }),
                 Expires = DateTime.Now.AddDays(1),
