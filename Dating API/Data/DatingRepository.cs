@@ -83,6 +83,17 @@ namespace DatingAPI.Data
             return response;
         }
 
+        public async Task<Photo> UpdateMainPhoto(Photo photo, int userID)
+        {
+            var response = await _dbContext.Photos
+                                           .FromSql("EXEC [dbo].[UpdateMainPhoto] {0}, {1}",
+                                           photo.ID, userID)
+                                           .FirstOrDefaultAsync();
+
+            return response;
+        }
+
+        /********** db operations that don't return a entity */
         public async Task<bool> IsThereMainPhotoForUser(int userID)
         {
             bool response;

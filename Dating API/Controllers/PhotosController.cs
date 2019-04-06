@@ -74,13 +74,30 @@ namespace DatingAPI.Controllers
             return new OkObjectResult(savedPhotoDTO);
         }
 
-        // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        // PUT api/users/{userID:int}/[controller]/photoID
+        [HttpPut("{photoID:int}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Photo), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Put(int userID, [FromBody] int photoID)
         {
+            if (photoID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete photo with id 0" }); }
+
+            // check if photo exist for user
+            var photoExists = await _datingRepository.PhotoExists(photoID);
+            if (!photoExists) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot change main photo, photo does not exist" }); }
+
+            if (userID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "invalid user ID, 0" }); }
+
+            //update 
+            var userDB = await _datingRepository.GetUser(userID);
+            var photoDB = userDB.Photos.Where(x => x.ID == photoID).FirstOrDefault();
+
+            var response = await _datingRepository.UpdateMainPhoto(photoDB, userID);
+
+            return new OkObjectResult(response);
         }
 
-        // DELETE api/<controller>/5
+        // DELETE api/users/{userID:int}/[controller]/photoID
         [HttpDelete("{photoID:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
