@@ -61,7 +61,7 @@ namespace DatingAPI.Controllers
 
             //isFirstPhoto
             var isFirstPhoto = await _datingRepository.IsThereMainPhotoForUser(photoForCreationDTO.UserID);
-            var isMain = (isFirstPhoto) ? true : false;
+            var isMain = (!isFirstPhoto) ? true : false;
 
 
             // save response properties to photos table in DB
