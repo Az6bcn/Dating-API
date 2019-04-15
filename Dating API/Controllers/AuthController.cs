@@ -43,8 +43,8 @@ namespace DatingAPI.Controllers
             if (!ModelState.IsValid) return new BadRequestObjectResult((new Error() { ErrorMessage = "username and password is required"}));
 
 
-            var username = registerViewModel.username.ToLower();
-            var password = registerViewModel.password;
+            var username = registerViewModel.Username.ToLower();
+            var password = registerViewModel.Password;
 
             // check if user already exist 
             var exists = await _authRepository.UserExists(username);
