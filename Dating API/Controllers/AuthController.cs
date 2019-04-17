@@ -52,7 +52,16 @@ namespace DatingAPI.Controllers
             if (exists) { return new BadRequestObjectResult(new Error() { ErrorMessage = "username already exists"}); }
 
             // user to create
-            var userToRegister = new User() { Username = username };
+            var userToRegister = new User() {
+                Username = username,
+                City = registerViewModel.City,
+                Country = registerViewModel.Country,
+                DateOfBirth = registerViewModel.Dateofbirth,
+                Gender = registerViewModel.Gender,
+                KnownAs = registerViewModel.Knownas,
+                CreatedAt = DateTime.Now
+                };
+
             var createdUser = await _authRepository.Register(userToRegister, password);
         
             return new OkObjectResult(new { CreatedUser =  createdUser.Username });
