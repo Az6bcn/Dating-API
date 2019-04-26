@@ -11,8 +11,8 @@ using System;
 namespace DatingAPI.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    [Migration("20190330231134_AddDeletedNullable2PropertyToPhotoEntity")]
-    partial class AddDeletedNullable2PropertyToPhotoEntity
+    [Migration("20190420143154_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAddedIdentityPK")]
+    partial class LikeEntityJoinTableOnDeleteBehaviourFKRequiredAddedIdentityPK
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,24 @@ namespace DatingAPI.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("DatingAPI.Model.Like", b =>
+                {
+                    b.Property<int>("LikerUserID");
+
+                    b.Property<int>("LikeeUserID");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<int>("LikeID")
+                        .ValueGeneratedOnAdd();
+
+                    b.HasKey("LikerUserID", "LikeeUserID");
+
+                    b.HasIndex("LikeeUserID");
+
+                    b.ToTable("Likes");
+                });
 
             modelBuilder.Entity("DatingAPI.Model.Photo", b =>
                 {
@@ -93,6 +111,19 @@ namespace DatingAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Values");
+                });
+
+            modelBuilder.Entity("DatingAPI.Model.Like", b =>
+                {
+                    b.HasOne("DatingAPI.Model.User", "LikeeUser")
+                        .WithMany("Likees")
+                        .HasForeignKey("LikeeUserID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("DatingAPI.Model.User", "LikerUser")
+                        .WithMany("Likers")
+                        .HasForeignKey("LikerUserID")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("DatingAPI.Model.Photo", b =>

@@ -19,9 +19,13 @@ namespace DatingAPI.Model
         public string Introduction { get; set; }
         public string LookingFor { get; set; }
         public string Interests { get; set; }
-        public IList<Photo> Photos { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastActive { get; set; }
+
+        // navigation collection
+        public IList<Photo> Photos { get; set; }
+        public IList<Like> Likers { get; set; }
+        public IList<Like> Likees { get; set; }
 
 
         public User()

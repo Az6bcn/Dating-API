@@ -11,9 +11,10 @@ using System;
 namespace DatingAPI.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190420122407_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded")]
+    partial class LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,9 +28,6 @@ namespace DatingAPI.Migrations
                     b.Property<int>("LikeeUserID");
 
                     b.Property<DateTime>("Date");
-
-                    b.Property<int>("LikeID")
-                        .ValueGeneratedOnAdd();
 
                     b.HasKey("LikerUserID", "LikeeUserID");
 
