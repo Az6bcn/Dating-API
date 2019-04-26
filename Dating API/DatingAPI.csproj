@@ -7,6 +7,12 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190302135525_ExtendedUserClass.cs" />
     <Compile Remove="Migrations\20190302135525_ExtendedUserClass.Designer.cs" />
+    <Compile Remove="Migrations\20190420113443_LikeEntityJoinTableOnDeleteBehaviourAdded.cs" />
+    <Compile Remove="Migrations\20190420113443_LikeEntityJoinTableOnDeleteBehaviourAdded.Designer.cs" />
+    <Compile Remove="Migrations\20190420120854_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded.cs" />
+    <Compile Remove="Migrations\20190420120854_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded.Designer.cs" />
+    <Compile Remove="Migrations\20190420122223_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded.cs" />
+    <Compile Remove="Migrations\20190420122223_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

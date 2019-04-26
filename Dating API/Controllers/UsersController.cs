@@ -28,6 +28,7 @@ namespace DatingAPI.Controllers
 
         [HttpGet("GetUsers")]
         [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
         [ProducesResponseType(typeof(IEnumerable<UserDTO>), 400)]
         public async Task<IActionResult> GetUsers()
         {
@@ -92,7 +93,66 @@ namespace DatingAPI.Controllers
             return Ok(userToEditDTO);
         }
 
+        [HttpPost("{likerUserID:int}/likes/{likeeUserID:int}")]
+        [ProducesResponseType(typeof(UserDetailDTO), 201)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SaveLike(int likerUserID, int likeeUserID)
+        {
+            if (likerUserID < 0  || likeeUserID < 0)
+            {
+                return new BadRequestObjectResult(new Error { ErrorMessage = "Liker or Likee user id is invalid" });
+            }
 
-       
+            // get users
+            var liker = _datingRepository.GetUser(likerUserID);
+            var likee = _datingRepository.GetUser(likeeUserID);
+
+            if (liker == null || likee == null)
+            {
+                return new NotFoundObjectResult(new Error { ErrorMessage = "Liker or Likee user does not exist" });
+            }
+
+            // save like 
+            var response = await  _datingRepository.SaveLike(likerUserID, likeeUserID);
+
+            var responseDTO = _mapper.Map<LikeDTO>(response);
+
+            return new ObjectResult(responseDTO);
+        }
+
+        /// <summary>
+        // Get list of users liked by user
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{userID:int}/likers")]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 400)]
+        public async Task<IActionResult> GetLikedUsers(int userID)
+        {
+            var users = await _datingRepository.GetLikers(userID);
+
+            var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
+
+            return Ok(usersDTO);
+        }
+
+        /// <summary>
+        /// Get list of User that liked user
+        /// </summary>
+        /// <param name="likeeUserID"></param>
+        /// <returns></returns>
+        [HttpGet("{userID:int}/likees")]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UserDTO>), 400)]
+        public async Task<IActionResult> GetLikeeUsers(int userID)
+        {
+            var users = await _datingRepository.GetLikees(userID);
+
+            var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
+
+            return Ok(usersDTO);
+        }
+
     }
 }
