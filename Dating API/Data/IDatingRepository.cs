@@ -11,11 +11,13 @@ namespace DatingAPI.Data
         void Add<T>(T entity) where T: class;
         void Delete<T>(T entity) where T : class;
         Task<bool> SaveAll();
+
+        Task<int> SaveOrUpdateReturnAffectedRowID();
         Task<IEnumerable<User>> GetUsers();
+        TEntity GetByID<TEntity>(int ID) where TEntity : class;
         Task<User> GetUser(int userID);
         Task<User> Update(User user);
-        Task<Photo> SavePhoto(Photo photo);
-        Task<Photo> UpdateMainPhoto(Photo photo, int userID);
+        Photo UpdateMainPhoto(Photo photo, int userID);
         Task<bool> IsThereMainPhotoForUser(int userID);
         Task<bool> PhotoExists(int photoID);
         Task<bool> DeletePhoto(int photoID);
