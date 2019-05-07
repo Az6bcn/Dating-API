@@ -67,8 +67,10 @@ namespace DatingAPI.Controllers
             // save response properties to photos table in DB
             var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri.ToString(), userID, 
                         photoForCreationDTO.Description, photoForCreationDTO.DateAdded, isMain);
-            var savedPhoto = await _datingRepository.SavePhoto(photo);
+            _datingRepository.Add(photo);
+            await _datingRepository.SaveOrUpdateReturnAffectedRowID();
 
+            var savedPhoto = _datingRepository.GetByID<Photo>(photo.ID);
             //return photo
             var savedPhotoDTO = _mapper.Map<PhotoForReturnDTO>(savedPhoto);
             return new OkObjectResult(savedPhotoDTO);
@@ -92,7 +94,7 @@ namespace DatingAPI.Controllers
             var userDB = await _datingRepository.GetUser(userID);
             var photoDB = userDB.Photos.Where(x => x.ID == photoID).FirstOrDefault();
 
-            var response = await _datingRepository.UpdateMainPhoto(photoDB, userID);
+            var response =  _datingRepository.UpdateMainPhoto(photoDB, userID);
 
             return new OkObjectResult(response);
         }

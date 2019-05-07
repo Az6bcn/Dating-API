@@ -53,56 +53,65 @@ namespace DatingAPI.Data
             return users;
         }
 
+        public TEntity GetByID<TEntity>(int ID) where TEntity : class {
+
+            var response = _dbContext.Set<TEntity>().Find(ID);
+
+            return response;
+        }
+
         public async Task<bool> SaveAll()
         {
             var response = await _dbContext.SaveChangesAsync() > 0;
             return response;
         }
 
+        public async Task<int> SaveOrUpdateReturnAffectedRowID()
+        {
+            var response = await _dbContext.SaveChangesAsync();
+            return response;
+        }
 
-        #region DB Operations that return an Entity : Stored Procedure
         public async Task<User> Update(User user)
         {
-            var response = await _dbContext.Users
-                                           .FromSql("EXEC [dbo].[UPDATE_USER_PROFILE] {0}, {1}, {2 },  {3}, {4},  {5}",
-                                           user.Id, user.City, user.Country, user.Interests, user.Introduction, user.LookingFor)
-                                           .FirstOrDefaultAsync();
+            var updatedUser = new User
+            {
+                Id = user.Id,
+                City = user.City,
+                Country = user.Country,
+                Interests = user.Interests,
+                Introduction = user.Introduction,
+                LookingFor = user.LookingFor
+            };
 
-            var photos = await GetUserPhotosByUserID(user.Id);
+            _dbContext.Users.Update(user);
 
-            response.Photos = photos as List<Photo>;
+            var updatedUserID = _dbContext.SaveChanges();
+
+            var response =await  _dbContext.Users
+                                                .Include( p => p.Photos)    
+                                                .Where(u => u.Id == updatedUserID).FirstOrDefaultAsync();
 
             return response;
+
         }
 
-        public async Task<IEnumerable<Photo>> GetUserPhotosByUserID(int UserID)
+
+        public Photo UpdateMainPhoto(Photo photo, int UserID)
         {
-            var response = await _dbContext.Photos
-                                           .FromSql("EXEC [dbo].[GetUserPhotoByUserID] {0}", UserID)
-                                           .ToListAsync();
+            photo.IsMain = true;
+            photo.UserId = UserID;
 
-            return response;
+            // update 
+            _dbContext.Photos.Update(photo);
+
+            _dbContext.SaveChanges();
+
+            return photo;
         }
 
-        public async Task<Photo> SavePhoto(Photo photo)
-        {
-            var response = await _dbContext.Photos
-                                           .FromSql("EXEC [dbo].[SavePhoto] {0}, {1}, {2}, {3}, {4}, {5}",
-                                           photo.Url, photo.Description, photo.CloudinaryID, photo.DateAdded, photo.UserId, photo.IsMain)
-                                           .FirstOrDefaultAsync();
+        #region DB Operations that return an Entity : Stored Procedure
 
-            return response;
-        }
-
-        public async Task<Photo> UpdateMainPhoto(Photo photo, int userID)
-        {
-            var response = await _dbContext.Photos
-                                           .FromSql("EXEC [dbo].[UpdateMainPhoto] {0}, {1}",
-                                           photo.ID, userID)
-                                           .FirstOrDefaultAsync();
-
-            return response;
-        }
 
         public async Task<Like> SaveLike(int likerUserID, int likeeUserID)
         {
