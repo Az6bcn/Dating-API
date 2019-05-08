@@ -109,8 +109,12 @@ namespace DatingAPI.Controllers
         {
             // get user's main photoURL
             var currentuser = await _datingRepository.GetUser(user.Id);
+            string userMainPhotoURL = string.Empty;
 
-            var userMainPhotoURL = currentuser.Photos.Where(x => x.IsMain).FirstOrDefault().Url;
+            if (currentuser.Photos.Count > 0)
+            {
+                userMainPhotoURL = currentuser.Photos.Where(x => x.IsMain).FirstOrDefault().Url;
+            }
             // generate token payload (body)
             var tokenDescriptor = new SecurityTokenDescriptor()
             {

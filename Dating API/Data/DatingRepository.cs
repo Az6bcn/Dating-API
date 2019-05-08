@@ -32,7 +32,8 @@ namespace DatingAPI.Data
 
         public async Task<User> GetUser(int userID)
         {
-            var user = await _dbContext.Users.Include(p => p.Photos)
+            var user = await _dbContext.Users
+                                .Include(p => p.Photos)
                                 .Where(u => u.Id == userID).FirstOrDefaultAsync();
             return user;
         }
@@ -62,66 +63,54 @@ namespace DatingAPI.Data
 
         public async Task<bool> SaveAll()
         {
+            //SaveChangesAsync => return £s of rows affected, @@ROWSCOUNT
             var response = await _dbContext.SaveChangesAsync() > 0;
             return response;
         }
 
-        public async Task<int> SaveOrUpdateReturnAffectedRowID()
-        {
-            var response = await _dbContext.SaveChangesAsync();
-            return response;
-        }
 
         public async Task<User> Update(User user)
         {
-            var updatedUser = new User
-            {
-                Id = user.Id,
-                City = user.City,
-                Country = user.Country,
-                Interests = user.Interests,
-                Introduction = user.Introduction,
-                LookingFor = user.LookingFor
-            };
-
             _dbContext.Users.Update(user);
 
-            var updatedUserID = _dbContext.SaveChanges();
+            var isUpdated = await SaveAll();
 
-            var response =await  _dbContext.Users
-                                                .Include( p => p.Photos)    
-                                                .Where(u => u.Id == updatedUserID).FirstOrDefaultAsync();
 
-            return response;
+            if (isUpdated) return user;
+
+            return null;
 
         }
 
 
-        public Photo UpdateMainPhoto(Photo photo, int UserID)
+        public async Task<Photo> UpdateMainPhoto(Photo photo, Photo currentMainPhoto)
         {
-            photo.IsMain = true;
-            photo.UserId = UserID;
-
             // update 
-            _dbContext.Photos.Update(photo);
+            _dbContext.Photos.UpdateRange(photo, currentMainPhoto);
 
-            _dbContext.SaveChanges();
+            var isUpdated = await SaveAll();
 
-            return photo;
+            if (isUpdated) return photo;
+
+            return null;
         }
 
+
+        public async Task<Like> SaveLike(Like like)
+        {
+           
+            _dbContext.Likes.Add(like);
+
+            var isAdded = await SaveAll();
+
+            if (isAdded) return like;
+
+            return null;
+        } 
         #region DB Operations that return an Entity : Stored Procedure
 
 
-        public async Task<Like> SaveLike(int likerUserID, int likeeUserID)
-        {
-            var response = await _dbContext.Likes
-                                           .FromSql("EXEC [dbo].[SaveLike] {0}, {1}, {2}",
-                                            likerUserID, likeeUserID, DateTime.Now)
-                                           .FirstOrDefaultAsync();
-
-            return response;
-        }
+  
 
         #endregion
 

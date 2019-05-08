@@ -68,7 +68,7 @@ namespace DatingAPI.Controllers
             var photo = _cloudinaryHelper.ParsePhoto(cloudinaryResponse.PublicId, cloudinaryResponse.Uri.ToString(), userID, 
                         photoForCreationDTO.Description, photoForCreationDTO.DateAdded, isMain);
             _datingRepository.Add(photo);
-            await _datingRepository.SaveOrUpdateReturnAffectedRowID();
+            await _datingRepository.SaveAll();
 
             var savedPhoto = _datingRepository.GetByID<Photo>(photo.ID);
             //return photo
@@ -92,9 +92,14 @@ namespace DatingAPI.Controllers
 
             //update 
             var userDB = await _datingRepository.GetUser(userID);
-            var photoDB = userDB.Photos.Where(x => x.ID == photoID).FirstOrDefault();
 
-            var response =  _datingRepository.UpdateMainPhoto(photoDB, userID);
+            var CurrentMain = userDB.Photos.FirstOrDefault(p => p.IsMain == true);
+            CurrentMain.IsMain = false;
+
+            var newMainPhoto = userDB.Photos.Where(x => x.ID == photoID).FirstOrDefault();
+            newMainPhoto.IsMain = true;
+
+            var response =  _datingRepository.UpdateMainPhoto(newMainPhoto, CurrentMain);
 
             return new OkObjectResult(response);
         }
