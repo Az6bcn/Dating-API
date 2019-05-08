@@ -81,12 +81,20 @@ namespace DatingAPI.Controllers
 
             var userToEdit = _mapper.Map<User>(userDetailDTO);
 
-            var editedUser = await _datingRepository.Update(userToEdit);
+            var userDB = await _datingRepository.GetUser(userToEdit.Id);
 
-            if (editedUser == null)
+            if (userDB == null)
             {
                 return new BadRequestObjectResult(new Error { ErrorMessage = "User doesn't exist" });
             }
+
+            userDB.City = userToEdit.City;
+            userDB.Country = userToEdit.Country;
+            userDB.Interests = userToEdit.Interests;
+            userDB.Introduction = userToEdit.Introduction;
+            userDB.LookingFor = userToEdit.LookingFor;
+                
+            var editedUser = await _datingRepository.Update(userDB);
 
             var userToEditDTO = _mapper.Map<UserDetailDTO>(editedUser);
 
@@ -113,8 +121,14 @@ namespace DatingAPI.Controllers
                 return new NotFoundObjectResult(new Error { ErrorMessage = "Liker or Likee user does not exist" });
             }
 
+            var likeToSave = new Like
+            {
+                LikerUserID = likerUserID,
+                LikeeUserID = likeeUserID,
+                Date = DateTime.Now
+            };
             // save like 
-            var response = await  _datingRepository.SaveLike(likerUserID, likeeUserID);
+            var response = await _datingRepository.SaveLike(likeToSave);
 
             var responseDTO = _mapper.Map<LikeDTO>(response);
 
