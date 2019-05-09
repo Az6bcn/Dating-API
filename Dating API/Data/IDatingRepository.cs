@@ -17,8 +17,6 @@ namespace DatingAPI.Data
         Task<User> Update(User user);
         Task<Photo> UpdateMainPhoto(Photo photo, Photo currentMainPhoto);
         Task<bool> IsThereMainPhotoForUser(int userID);
-        Task<bool> PhotoExists(int photoID);
-        Task<bool> DeletePhoto(int photoID);
         Task<Like> SaveLike(Like like);
         Task<IEnumerable<User>> GetLikers(int userID);
         Task<IEnumerable<User>> GetLikees(int userID);

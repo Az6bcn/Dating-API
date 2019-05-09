@@ -107,12 +107,58 @@ namespace DatingAPI.Data
 
             return null;
         } 
-        #region DB Operations that return an Entity : Stored Procedure
+
+        public async Task<IEnumerable<User>> GetLikers(int UserID)
+        {
+            var likers = await _dbContext.Likes
+                                   .Include(lkru => lkru.LikerUser)
+                                   .ThenInclude(p => p.Photos)
+                                   .Include(lkeeu => lkeeu.LikeeUser)
+                                   .ThenInclude(p1 => p1.Photos)
+                                   .Where(u => u.LikerUserID == UserID)
+                                   .Select(like => new User
+                                   {
+                                       Id = like.LikeeUserID,
+                                       Username = like.LikeeUser.Username,
+                                       Gender = like.LikeeUser.Gender,
+                                       DateOfBirth = like.LikeeUser.DateOfBirth,
+                                       Country = like.LikeeUser.Country,
+                                       City = like.LikeeUser.City,
+                                       CreatedAt = like.LikeeUser.CreatedAt,
+                                       LastActive = like.LikeeUser.LastActive,
+                                       Photos = like.LikeeUser.Photos
+                                   })
+                                   .ToListAsync();
+
+            return likers;
+        }
+
+        public async Task<IEnumerable<User>> GetLikees(int UserID)
+        {
+            var likers = await _dbContext.Likes
+                                   .Include(lkru => lkru.LikerUser)
+                                   .ThenInclude(p => p.Photos)
+                                   .Include(lkeeu => lkeeu.LikeeUser)
+                                   .ThenInclude(p1 => p1.Photos)
+                                   .Where(u => u.LikeeUserID == UserID)
+                                   .Select(like => new User
+                                   {
+                                       Id = like.LikerUserID,
+                                       Username = like.LikerUser.Username,
+                                       Gender = like.LikerUser.Gender,
+                                       DateOfBirth = like.LikerUser.DateOfBirth,
+                                       Country = like.LikerUser.Country,
+                                       City = like.LikerUser.City,
+                                       CreatedAt = like.LikerUser.CreatedAt,
+                                       LastActive = like.LikerUser.LastActive,
+                                       Photos = like.LikerUser.Photos
+                                   })
+                                   .ToListAsync();
+
+            return likers;
+        }
 
 
-  
-
-        #endregion
 
         #region DB Operations that don't return an exact/specific entity: Stored Procedure
         /********** db operations that don't return a entity */
@@ -147,171 +193,9 @@ namespace DatingAPI.Data
 
         }
 
-        public async Task<bool> PhotoExists(int photoID)
-        {
-            bool response;
-            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = "[dbo].[PhotoExist]"; // stored procedure name
-                command.CommandType = CommandType.StoredProcedure;
-                // stored procedure parameter
-                command.Parameters.Add(new SqlParameter("@PhotoID", photoID));
 
+        
 
-                _dbContext.Database.OpenConnection();
-
-                using (var result = await command.ExecuteReaderAsync())
-                {
-                    if (result.HasRows)
-                    {
-                        // read the result
-                        while (result.Read())
-                        {
-                            // get the returned column value
-                            response = (bool)result["PhotoExist"];
-                            return response;
-                        }
-                    }
-                }
-                return false;
-            }
-
-        }
-
-        public async Task<bool> DeletePhoto(int photoID)
-        {
-            bool response;
-            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = "[dbo].[DeletePhoto]"; // stored procedure name
-                command.CommandType = CommandType.StoredProcedure;
-                // stored procedure parameter
-                command.Parameters.Add(new SqlParameter("@PhotoID", photoID));
-
-
-                _dbContext.Database.OpenConnection();
-
-                using (var result = await command.ExecuteReaderAsync())
-                {
-                    if (result.HasRows)
-                    {
-                        // read the result
-                        while (result.Read())
-                        {
-                            // get the returned column value
-                            response = (bool)result["Deleted"];
-                            return response;
-                        }
-                    }
-                }
-                return false;
-            }
-
-        }
-
-        public async Task<IEnumerable<User>> GetLikers(int UserID)
-        {
-            var response = new List<User>();
-            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = "[dbo].[GetLikers]"; // stored procedure name
-                command.CommandType = CommandType.StoredProcedure;
-                // stored procedure parameter
-                command.Parameters.Add(new SqlParameter("@UserID", UserID));
-
-
-                _dbContext.Database.OpenConnection();
-
-                using (var result = await command.ExecuteReaderAsync())
-                {
-                    if (result.HasRows)
-                    {
-                        // read the result
-                        while (result.Read())
-                        {
-                            // get the returned column value
-                            response.Add(
-                            new User
-                            {
-                                Id = (int)result["Id"],
-                                Username = (string)result["Username"],
-                                Gender = (string)result["Gender"],
-                                DateOfBirth = (DateTime)result["DateOfBirth"],
-                                Country = (string)result["Country"],
-                                City = (string)result["City"],
-                                CreatedAt = (DateTime)result["CreatedAt"],
-                                LastActive = (DateTime)result["LastActive"],
-                                Photos = new List<Photo> {
-                                    new Photo {
-                                        ID = (int)result["ID"],
-                                        UserId = (int)result["UserId"],
-                                        CloudinaryID = (string)result["CloudinaryID"],
-                                        DateAdded = (DateTime)result["DateAdded"],
-                                        Deleted = !result.IsDBNull(16) ? (DateTime)result["Deleted"] : (DateTime?)null,
-                                        Description = (string)result["Description"],
-                                        Url = (string)result["Url"],
-                                        IsMain = (bool)result["IsMain"]
-                                    }
-                                }
-                            });
-                        }
-                    }
-                    return response;
-                }
-            }
-        }
-
-        public async Task<IEnumerable<User>> GetLikees(int UserID)
-        {
-            var response = new List<User>();
-            using (var command = _dbContext.Database.GetDbConnection().CreateCommand())
-            {
-                command.CommandText = "[dbo].[GetLikees]"; // stored procedure name
-                command.CommandType = CommandType.StoredProcedure;
-                // stored procedure parameter
-                command.Parameters.Add(new SqlParameter("@UserID", UserID));
-
-
-                _dbContext.Database.OpenConnection();
-
-                using (var result = await command.ExecuteReaderAsync())
-                {
-                    if (result.HasRows)
-                    {
-                        // read the result
-                        while (result.Read())
-                        {
-                            // get the returned column value
-                            response.Add(
-                            new User
-                            {
-                                Id = (int)result["Id"],
-                                Username = (string)result["Username"],
-                                Gender = (string)result["Gender"],
-                                DateOfBirth = (DateTime)result["DateOfBirth"],
-                                Country = (string)result["Country"],
-                                City = (string)result["City"],
-                                CreatedAt = (DateTime)result["CreatedAt"],
-                                LastActive = (DateTime)result["LastActive"],
-                                Photos = new List<Photo> {
-                                    new Photo {
-                                        ID = (int)result["ID"],
-                                        UserId = (int)result["UserId"],
-                                        CloudinaryID = (string)result["CloudinaryID"],
-                                        DateAdded = (DateTime)result["DateAdded"],
-                                        Deleted = !result.IsDBNull(16) ? (DateTime)result["Deleted"] : (DateTime?)null,
-                                        Description = (string)result["Description"],
-                                        Url = (string)result["Url"],
-                                        IsMain = (bool)result["IsMain"]
-                                    }
-                                }
-                            });
-                        }
-                    }
-                    return response;
-                }
-            }
-        }
     }
 
     #endregion

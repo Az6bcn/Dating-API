@@ -85,8 +85,8 @@ namespace DatingAPI.Controllers
             if (photoID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete photo with id 0" }); }
 
             // check if photo exist for user
-            var photoExists = await _datingRepository.PhotoExists(photoID);
-            if (!photoExists) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot change main photo, photo does not exist" }); }
+            var photoExists = _datingRepository.GetByID<Photo>(photoID);
+            if (photoExists == null) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot change main photo, photo does not exist" }); }
 
             if (userID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "invalid user ID, 0" }); }
 
@@ -113,13 +113,11 @@ namespace DatingAPI.Controllers
             if(photoID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete photo with id 0" });  }
 
             // check if photo exist for user
-            var photoExists = await _datingRepository.PhotoExists(photoID);
-            if (!photoExists) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete, photo does not exist" }); }
+            var photoExists = _datingRepository.GetByID<Photo>(photoID);
+            if (photoExists == null) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete, photo does not exist" }); }
 
             //delete
-            var deleted = await _datingRepository.DeletePhoto(photoID);
-
-            if(!deleted) { return new BadRequestObjectResult(new Error { ErrorMessage = "Cannot delete photo" }); }
+            _datingRepository.Delete<Photo>(photoExists);
 
             return new NoContentResult();
         }
