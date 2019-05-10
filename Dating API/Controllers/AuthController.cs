@@ -125,7 +125,7 @@ namespace DatingAPI.Controllers
                                                    new Claim("MainPhotoURL", userMainPhotoURL)
                                                      // we can add issuer and audience 
                                                  }),
-                Expires = DateTime.Now.AddDays(1),
+                Expires = DateTime.Now.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key: signKey), SecurityAlgorithms.HmacSha512Signature)
 
 
