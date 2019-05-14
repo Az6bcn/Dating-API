@@ -28,6 +28,24 @@ namespace DatingAPI.DTOs.Profiles
             CreateMap<PhotoDTO, Photo>();
 
             CreateMap<Photo, PhotoForReturnDTO>();
+
+
+            CreateMap<Message, MessageToReturnDTO>()
+                .ForMember(dest => dest.RecipientKnownAs, opt => opt.MapFrom(src => src.Recipient.KnownAs))
+                .ForMember(dest => dest.SenderKnownAs, opt => opt.MapFrom(src => src.Sender.KnownAs))
+                .ForMember(dest => dest.RecipientPhotoURL, opt => opt.MapFrom(src => src.Recipient.Photos.Where(p => p.IsMain)
+                    .Select(x => x.Url).FirstOrDefault()))
+                .ForMember(dest => dest.SenderPhotoURL, opt => opt.MapFrom(src => src.Sender.Photos.FirstOrDefault(p => p.IsMain == true).Url));
+
+
+
+
+            CreateMap<Message, MessageInOutBoxDTO>()
+                   .ForMember(dest => dest.RecipientKnownAs, opt => opt.MapFrom(src => src.Recipient.KnownAs))
+                   .ForMember(dest => dest.SenderKnownAs, opt => opt.MapFrom(src => src.Sender.KnownAs))
+                   .ForMember(dest => dest.RecipientPhotoURL, opt => opt.MapFrom(src => src.Recipient.Photos.Where(p => p.IsMain)
+                        .Select(x => x.Url).FirstOrDefault()))
+                   .ForMember(dest => dest.SenderPhotoURL, opt => opt.MapFrom(src => src.Sender.Photos.FirstOrDefault(p => p.IsMain == true).Url));
         }
     }
 }
