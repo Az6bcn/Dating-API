@@ -24,9 +24,11 @@ namespace Dating_API
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger _logger;
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -36,6 +38,7 @@ namespace Dating_API
         {
             /* Specify the services we want to consume in our App, these services will be used as DI by controllers, Repositories etc*/
 
+            _logger.LogInformation("Adddddiiiiinnngggg Services in startUp");
 
 
             // Register DbContext bcos it'll be injected into other parts of our App 
@@ -124,8 +127,8 @@ namespace Dating_API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedData seeder)
         {
-            /* pipeline for our httpRequest*/
 
+            /* pipeline for our httpRequest*/
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -13,6 +13,8 @@
     <Compile Remove="Migrations\20190420120854_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded.Designer.cs" />
     <Compile Remove="Migrations\20190420122223_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded.cs" />
     <Compile Remove="Migrations\20190420122223_LikeEntityJoinTableOnDeleteBehaviourFKRequiredAdded.Designer.cs" />
+    <Compile Remove="Migrations\20190512115905_MessagesAdded.cs" />
+    <Compile Remove="Migrations\20190512115905_MessagesAdded.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +26,8 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="CloudinaryDotNet" Version="1.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>

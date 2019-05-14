@@ -20,5 +20,11 @@ namespace DatingAPI.Data
         Task<Like> SaveLike(Like like);
         Task<IEnumerable<User>> GetLikers(int userID);
         Task<IEnumerable<User>> GetLikees(int userID);
+        Task<IEnumerable<Message>> GetMessageForUserInbox(int userID);
+        Task<IEnumerable<Message>> GetMessageForUserOutbox(int userID);
+        Task<Message> GetUserMessage(int messageID);
+        Task<IEnumerable<Message>> GetMessageThread(int userID, int recipientID);
+
+
     }
 }

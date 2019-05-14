@@ -159,6 +159,58 @@ namespace DatingAPI.Data
         }
 
 
+        public async Task<IEnumerable<Message>> GetMessageForUserInbox(int userID)
+        {
+            var response =  await _dbContext.Messages
+                                            .Include(sender => sender.Sender)
+                                            .ThenInclude(p => p.Photos)
+                                            .Include(recipient => recipient.Recipient)
+                                            .ThenInclude(p => p.Photos)
+                                            .Where(m => m.RecipientID == userID)
+                                            .ToListAsync();
+            return response;
+        }
+
+        public async Task<IEnumerable<Message>> GetMessageForUserOutbox(int userID)
+        {
+            var response = await _dbContext.Messages
+                                           .Include(sender => sender.Sender)
+                                           .ThenInclude(p => p.Photos)
+                                           .Include(recipient => recipient.Recipient)
+                                           .ThenInclude(p => p.Photos)
+                                           .Where(m => m.SenderID == userID)
+                                           .ToListAsync();
+            return response;
+        }
+
+
+
+        public async Task<Message> GetUserMessage(int messageID)
+        {
+            var response = await _dbContext.Messages
+                                     .Include(sender => sender.Sender)
+                                     .ThenInclude(p => p.Photos)
+                                     .Include(recipient => recipient.Recipient)
+                                     .ThenInclude(p => p.Photos)
+                                     .Where(m => m.ID == messageID)
+                                     .FirstOrDefaultAsync();
+
+            return response;
+        }
+
+        public async Task<IEnumerable<Message>> GetMessageThread(int userID, int recipientID)
+        {
+            var response = await _dbContext.Messages
+                                     .Include(sender => sender.Sender)
+                                     .ThenInclude(p => p.Photos)
+                                     .Include(recipient => recipient.Recipient)
+                                     .ThenInclude(p => p.Photos)
+                                     .Where(m => (m.SenderID == userID && m.RecipientID == recipientID)
+                                                    || (m.SenderID == recipientID && m.RecipientID == userID))
+                                     .ToListAsync();
+
+            return response;
+        }
 
         #region DB Operations that don't return an exact/specific entity: Stored Procedure
         /********** db operations that don't return a entity */
