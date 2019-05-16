@@ -33,10 +33,10 @@ namespace DatingAPI.Controllers
         /// <returns></returns>
         [HttpGet("Inbox")]
         [ProducesResponseType(typeof(IEnumerable<MessageInOutBoxDTO>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(IEnumerable<MessageInOutBoxDTO>),StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(IEnumerable<MessageInOutBoxDTO>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetMessageForUserInbox(int UserID)
         {
-            if(UserID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "invalid userID" }); };
+            if (UserID < 0) { return new BadRequestObjectResult(new Error { ErrorMessage = "invalid userID" }); };
 
             var user = _datingRepository.GetByID<User>(UserID);
 
@@ -86,10 +86,10 @@ namespace DatingAPI.Controllers
 
         public async Task<IActionResult> CreateMessage([FromBody] MessagesDTO messagesDTO) {
 
-            if(messagesDTO == null) { return BadRequest(new Error { ErrorMessage = "null message" }); }
+            if (messagesDTO == null) { return BadRequest(new Error { ErrorMessage = "null message" }); }
 
             var sender = _datingRepository.GetByID<User>(messagesDTO.SenderID);
-            if(sender == null) { return NotFound(new Error { ErrorMessage = "Sender not found" }); }
+            if (sender == null) { return NotFound(new Error { ErrorMessage = "Sender not found" }); }
 
             var recipient = _datingRepository.GetByID<User>(messagesDTO.SenderID);
             if (recipient == null) { return NotFound(new Error { ErrorMessage = "Recipient not found" }); }
@@ -111,7 +111,7 @@ namespace DatingAPI.Controllers
 
             return Ok(messagesDTO);
         }
- 
+
         /// <summary>
         /// Get a message
         /// </summary>
@@ -121,12 +121,12 @@ namespace DatingAPI.Controllers
         [ProducesResponseType(typeof(MessageToReturnDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(MessageToReturnDTO), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(MessageToReturnDTO), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetMessage (int messageID) {
+        public async Task<IActionResult> GetMessage(int messageID) {
             if (messageID < 0) { return BadRequest(new Error { ErrorMessage = "Invalid MessageID" }); }
 
             var message = await _datingRepository.GetUserMessage(messageID);
 
-            if(message == null) { return NotFound(new Error { ErrorMessage = "Message not found" }); }
+            if (message == null) { return NotFound(new Error { ErrorMessage = "Message not found" }); }
 
             var reposneDTO = _mapper.Map<MessageToReturnDTO>(message);
             return Ok(reposneDTO);
@@ -162,7 +162,7 @@ namespace DatingAPI.Controllers
         [ProducesResponseType(typeof(MessageToReturnDTO), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetMessageThread(int userID, int recipientID)
         {
-            if (userID <0 || recipientID < 0) { return BadRequest(new Error { ErrorMessage = "Invalid User or RecipientID" }); }
+            if (userID < 0 || recipientID < 0) { return BadRequest(new Error { ErrorMessage = "Invalid User or RecipientID" }); }
 
             var sender = _datingRepository.GetByID<User>(userID);
             if (sender == null) { return NotFound(new Error { ErrorMessage = "User not found" }); }
@@ -176,5 +176,27 @@ namespace DatingAPI.Controllers
 
             return Ok(responseDTO);
         }
+
+
+        /// <summary>
+        /// Deletes a message
+        /// </summary>
+        /// <param name="messageID"></param>
+        /// <returns></returns>
+        [HttpDelete()]
+        [ProducesResponseType(typeof(MessageToReturnDTO), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(MessageToReturnDTO), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(MessageToReturnDTO), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteMessage(int messageID)
+        {
+            if (messageID < 0) { return BadRequest(new Error { ErrorMessage = "Invalid MessageID" }); }
+
+            var message = await _datingRepository.GetUserMessage(messageID);
+
+            if (message == null) { return NotFound(new Error { ErrorMessage = "Message not found" }); }
+
+            return NoContent();
+        }
+
     }
 }
