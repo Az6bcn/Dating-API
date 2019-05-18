@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingAPI.Data;
@@ -34,6 +35,18 @@ namespace DatingAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<UserDTO>), 400)]
         public async Task<IActionResult> GetUsers(UserParams userParams)
         {
+            var currentUserID =int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var currentUser = _datingRepository.GetByID<User>(currentUserID);
+
+            userParams.UserID = currentUserID;
+
+            if(string.IsNullOrWhiteSpace(userParams.Gender))
+            {
+                userParams.Gender = string.Equals(currentUser.Gender, "male", StringComparison.OrdinalIgnoreCase) ? "female" : "male";
+            }
+
+          
             var users = await _datingRepository.GetUsers(userParams);
 
             var usersDTO = _mapper.Map<IEnumerable<UserDTO>>(users);
