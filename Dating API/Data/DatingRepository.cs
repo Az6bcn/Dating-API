@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using DatingAPI.DTOs;
+using DatingAPI.Helpers;
 using DatingAPI.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,11 +48,13 @@ namespace DatingAPI.Data
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = await _dbContext.Users.Include(p => p.Photos)
-                                .ToListAsync();
-            return users;
+            var users = _dbContext.Users.Include(p => p.Photos);
+
+            var pagedUsers = await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
+
+            return pagedUsers;
         }
 
         public TEntity GetByID<TEntity>(int ID) where TEntity : class {
