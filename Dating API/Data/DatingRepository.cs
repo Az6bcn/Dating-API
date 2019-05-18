@@ -50,7 +50,18 @@ namespace DatingAPI.Data
 
         public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = _dbContext.Users.Include(p => p.Photos);
+            var users = _dbContext.Users.Include(p => p.Photos)
+                                        .Where(u => u.Id != userParams.UserID 
+                                            && u.Gender == userParams.Gender);
+
+            if (userParams.MinAge != 18 || userParams.MaxAge != 18)
+            {
+                var minDoB = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+                var maxDoB = DateTime.Today.AddYears(-userParams.MinAge);
+
+                users = users.Where(x => x.DateOfBirth >= minDoB && x.DateOfBirth <= maxDoB);
+            }
+
 
             var pagedUsers = await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
 
