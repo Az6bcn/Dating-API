@@ -81,26 +81,26 @@ namespace DatingAPI_Test.Controller
            
         }
 
-        [Ignore]
-        [Description("Should return a list of all users, in dto model")]
-        [TestMethod]
-        public void GetAllUsers_WhenCalled_ShouldReturnListOfUsersDTOAsync()
-        {
-            // Arrange
-            // set up concrete method implementation for GetUsers() in the interface
-            _datingRepositoryMock.Setup(s => s.GetUsers()).Returns(Task.FromResult(users.AsEnumerable()));
+        //[Ignore]
+        //[Description("Should return a list of all users, in dto model")]
+        //[TestMethod]
+        //public void GetAllUsers_WhenCalled_ShouldReturnListOfUsersDTOAsync()
+        //{
+        //    // Arrange
+        //    // set up concrete method implementation for GetUsers() in the interface
+        //    _datingRepositoryMock.Setup(s => s.GetUsers()).Returns(Task.FromResult(users.AsEnumerable()));
 
-            var controller = new UsersController(_datingRepositoryMock.Object, mapper);
+        //    var controller = new UsersController(_datingRepositoryMock.Object, mapper);
 
-            // Act
-            var usersDtoList =  (OkObjectResult)controller.GetUsers().Result;
-            var count = usersDtoList.Value as List<UserDTO>;
+        //    // Act
+        //    var usersDtoList =  (OkObjectResult)controller.GetUsers().Result;
+        //    var count = usersDtoList.Value as List<UserDTO>;
 
-            //Assert
-            Assert.IsInstanceOfType(usersDtoList.Value, typeof(IEnumerable<UserDTO>));
-            Assert.AreEqual(3, count.Count);
+        //    //Assert
+        //    Assert.IsInstanceOfType(usersDtoList.Value, typeof(IEnumerable<UserDTO>));
+        //    Assert.AreEqual(3, count.Count);
 
-        }
+        //}
 
         [Description("Should return user of the ID, in dto model")]
         [TestMethod]

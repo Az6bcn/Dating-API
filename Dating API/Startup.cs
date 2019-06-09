@@ -158,7 +158,7 @@ namespace Dating_API
             // set default homepage to index.html of the compiled Angular app
             app.UseDefaultFiles();
 
-            //serve static file: to serve built Angular app
+            //serve static file: to serve built Angular app in wwwwrooot
             app.UseStaticFiles();
 
             app.UseMvc();
