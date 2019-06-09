@@ -161,7 +161,13 @@ namespace Dating_API
             //serve static file: to serve built Angular app in wwwwrooot
             app.UseStaticFiles();
 
-            app.UseMvc();
+            app.UseMvc(route =>
+                {
+                    route.MapSpaFallbackRoute(
+                          name: "spa-fallback",
+                          defaults: new { controller = "Fallback", action = "index" }
+                      );
+                });
         }
     }
 }
