@@ -81,6 +81,7 @@ namespace DatingAPI_Test.Controller
            
         }
 
+        [Ignore]
         [Description("Should return a list of all users, in dto model")]
         [TestMethod]
         public void GetAllUsers_WhenCalled_ShouldReturnListOfUsersDTOAsync()

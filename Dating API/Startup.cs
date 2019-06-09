@@ -155,7 +155,11 @@ namespace Dating_API
             // Add Authentication to the pipeline
             app.UseAuthentication();
 
+            // set default homepage to index.html of the compiled Angular app
+            app.UseDefaultFiles();
 
+            //serve static file: to serve built Angular app
+            app.UseStaticFiles();
 
             app.UseMvc();
         }
