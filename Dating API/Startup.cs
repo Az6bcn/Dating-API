@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using DatingAPI.Data;
 using DatingAPI.DTOs.Profiles;
 using DatingAPI.Helpers;
@@ -15,10 +10,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Text;
 
 namespace Dating_API
 {
@@ -46,6 +41,8 @@ namespace Dating_API
                 // tell and configure the dB provider we want to use e.g: sqllite, sql server etc )
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
 
+            // Automatically perform database migration (Azure)
+            services.BuildServiceProvider().GetService<DataDbContext>().Database.Migrate();
 
             // Register CORS 
             services.AddCors();
@@ -61,9 +58,9 @@ namespace Dating_API
             services.AddScoped<ICloudinaryHelper, CloudinaryHelper>();
 
 
-            var jwtKey = Configuration.GetSection(nameof(JwtKey));
-            var key = jwtKey[nameof(JwtKey.SignKey)];
-            var signKey = Encoding.ASCII.GetBytes(key); // encode key as Byte[]
+            IConfigurationSection jwtKey = Configuration.GetSection(nameof(JwtKey));
+            string key = jwtKey[nameof(JwtKey.SignKey)];
+            byte[] signKey = Encoding.ASCII.GetBytes(key); // encode key as Byte[]
 
             // Add Authentication => to authenticate and only allow authenticated users 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -111,17 +108,18 @@ namespace Dating_API
 
 
             //AutoMapper
-            var mapperConfig = new MapperConfiguration(config =>
+            MapperConfiguration mapperConfig = new MapperConfiguration(config =>
             {
                 config.AddProfile<UserProfile>();
             });
             services.AddAutoMapper();
 
             services.AddMvc()
-                .AddJsonOptions(opt => {
+                .AddJsonOptions(opt =>
+                {
                     opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                     opt.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                    });
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -152,7 +150,7 @@ namespace Dating_API
 
 
             //seed data to DB
-            //seeder.Seed();
+            seeder.Seed();
 
             // Add Authentication to the pipeline
             app.UseAuthentication();

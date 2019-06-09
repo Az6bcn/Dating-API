@@ -23,21 +23,25 @@ namespace DatingAPI.Data
             // convert this json read string to object 
             var Users = JsonConvert.DeserializeObject<List<User>>(usersJsonString);
 
+            var users = _dbContext.Users.ToList().Any();
 
-            //save to DB with DBcontext
-            foreach (var user in Users)
+            if(!users)
             {
-                byte[] passwordHash, passwordSalt;
-                createPassword("password", out passwordHash, out passwordSalt);
+                //save to DB with DBcontext
+                foreach (var user in Users)
+                {
+                    byte[] passwordHash, passwordSalt;
+                    createPassword("password", out passwordHash, out passwordSalt);
 
-                user.PasswordHash = passwordHash;
-                user.PasswordSalt = passwordSalt;
-                user.Username = user.Username.ToLower();
+                    user.PasswordHash = passwordHash;
+                    user.PasswordSalt = passwordSalt;
+                    user.Username = user.Username.ToLower();
 
-                _dbContext.Add(user);
-                _dbContext.SaveChanges();
+                    _dbContext.Add(user);
+                    _dbContext.SaveChanges();
 
 
+                }
             }
         }
 

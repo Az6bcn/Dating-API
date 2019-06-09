@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 Dating API/appsettings\.json
+/Dating API/wwwroot
+/Dating API/Properties/PublishProfiles
